@@ -17,6 +17,10 @@ public class AstUtil {
     }
     return new ExpressionStmt(call);
   }
+  
+  public static Statement createCoverageTrackerCall(String method, Expression... arguments) {
+    return createMethodCall("io.badawi.coverage.runtime.CoverageTracker." + method, arguments);
+  }
 
   private AstUtil() {}
 }

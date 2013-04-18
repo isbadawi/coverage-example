@@ -1,12 +1,9 @@
 package io.badawi.coverage;
 
-import japa.parser.ASTHelper;
 import japa.parser.ast.Node;
 import japa.parser.ast.PackageDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
-import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.IntegerLiteralExpr;
-import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.QualifiedNameExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
@@ -23,11 +20,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class CoverageInstrumentationVisitor extends VoidVisitorAdapter<Object> {
-    private static Statement makeCoverageTrackingCall(String className, int line) {
-      return AstUtil.createMethodCall("io.badawi.coverage.runtime.CoverageTracker.markExecuted",
-          new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line)));
-    }
-    
     private Multimap<String, Integer> executableLines = HashMultimap.create();
     
     public Multimap<String, Integer> getExecutableLines() {
@@ -36,7 +28,9 @@ public class CoverageInstrumentationVisitor extends VoidVisitorAdapter<Object> {
     
     private Statement makeCoverageTrackingCall(Node node) {
       executableLines.put(currentClass.toString(), node.getBeginLine());
-      return makeCoverageTrackingCall(currentClass.toString(), node.getBeginLine());
+      return AstUtil.createCoverageTrackerCall("markExecuted",
+          new StringLiteralExpr(currentClass.toString()),
+          new IntegerLiteralExpr(String.valueOf(node.getBeginLine())));
     }
     
     private NameExpr currentPackage;

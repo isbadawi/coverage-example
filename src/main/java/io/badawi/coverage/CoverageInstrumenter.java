@@ -45,12 +45,11 @@ public class CoverageInstrumenter {
     List<Statement> body = mainMethod.getBody().getStmts();
     for (String className : executableLines.keySet()) {
       for (Integer line : executableLines.get(className)) {
-        body.add(0, AstUtil.createMethodCall("io.badawi.coverage.runtime.CoverageTracker.markExecutable",
+        body.add(0, AstUtil.createCoverageTrackerCall("markExecutable",
             new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line))));
       }
     }
-    body.add(AstUtil.createMethodCall(
-        "io.badawi.coverage.runtime.CoverageTracker.writeCoverageToFile",
+    body.add(AstUtil.createCoverageTrackerCall("writeCoverageToFile",
         new StringLiteralExpr("coverage_report.txt")));
   }
 }
