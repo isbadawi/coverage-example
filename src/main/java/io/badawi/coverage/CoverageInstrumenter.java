@@ -52,7 +52,5 @@ public class CoverageInstrumenter {
             new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line))));
       }
     }
-    body.add(AstUtil.createCoverageTrackerCall("writeCoverageToFile",
-        new StringLiteralExpr("coverage_report.txt")));
   }
 }
