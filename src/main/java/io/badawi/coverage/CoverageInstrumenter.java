@@ -13,10 +13,12 @@ import japa.parser.ast.visitor.VoidVisitorAdapter;
 
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Multimap;
 
 public class CoverageInstrumenter {
-  private static boolean isMainMethod(MethodDeclaration method) {
+  @VisibleForTesting
+  static boolean isMainMethod(MethodDeclaration method) {
     return ModifierSet.isPublic(method.getModifiers())
         && ModifierSet.isStatic(method.getModifiers())
         && method.getType() instanceof VoidType
@@ -25,7 +27,8 @@ public class CoverageInstrumenter {
             new ReferenceType(new ClassOrInterfaceType("String"), 1));
   }
 
-  private static MethodDeclaration findMainMethod(CompilationUnit unit) {
+  @VisibleForTesting
+  static MethodDeclaration findMainMethod(CompilationUnit unit) {
     final MethodDeclaration[] method = new MethodDeclaration[1];
     unit.accept(new VoidVisitorAdapter<Object>() {
       @Override public void visit(MethodDeclaration node, Object arg) {
