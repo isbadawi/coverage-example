@@ -1,5 +1,7 @@
 package io.badawi.coverage;
 
+import japa.parser.JavaParser;
+import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.ModifierSet;
@@ -11,6 +13,8 @@ import japa.parser.ast.type.ReferenceType;
 import japa.parser.ast.type.VoidType;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -22,6 +26,8 @@ public class CoverageInstrumenter {
     return ModifierSet.isPublic(method.getModifiers())
         && ModifierSet.isStatic(method.getModifiers())
         && method.getType() instanceof VoidType
+        && method.getName().equals("main")
+        && method.getParameters() != null
         && method.getParameters().size() == 1
         && method.getParameters().get(0).getType().equals(
             new ReferenceType(new ClassOrInterfaceType("String"), 1));
@@ -52,5 +58,11 @@ public class CoverageInstrumenter {
             new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line))));
       }
     }
+  }
+  
+  public static void main(String[] args) throws IOException, ParseException {
+    CompilationUnit classfile = JavaParser.parse(new File(args[0]));
+    instrument(classfile);
+    System.out.println(classfile);
   }
 }
