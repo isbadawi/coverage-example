@@ -63,6 +63,6 @@ public class CoverageInstrumenter {
   public static void main(String[] args) throws IOException, ParseException {
     CompilationUnit classfile = JavaParser.parse(new File(args[0]));
     instrument(classfile);
-    System.out.println(classfile);
+    System.out.println(classfile.toString());
   }
 }

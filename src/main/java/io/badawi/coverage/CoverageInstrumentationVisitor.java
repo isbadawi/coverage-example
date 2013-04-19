@@ -42,7 +42,10 @@ public class CoverageInstrumentationVisitor extends VoidVisitorAdapter<Object> {
     }
     
     @Override public void visit(ClassOrInterfaceDeclaration node, Object arg) {
-      currentClass = new QualifiedNameExpr(currentPackage, node.getName());
+      currentClass = new NameExpr(node.getName());
+      if (currentPackage != null) {
+        currentClass = new QualifiedNameExpr(currentPackage, currentClass.getName());
+      }
       super.visit(node, arg);
     }
     
