@@ -1,17 +1,15 @@
 package io.badawi.coverage;
 
+import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.Node;
-import japa.parser.ast.PackageDeclaration;
-import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.expr.IntegerLiteralExpr;
-import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.expr.QualifiedNameExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import japa.parser.ast.stmt.BlockStmt;
 import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.visitor.VoidVisitorAdapter;
 
+import java.io.File;
 import java.util.List;
 import java.util.Stack;
 
@@ -26,27 +24,18 @@ public class CoverageInstrumentationVisitor extends VoidVisitorAdapter<Object> {
       return executableLines;
     }
     
+    private String filename;
+    
     private Statement makeCoverageTrackingCall(Node node) {
-      executableLines.put(currentClass.toString(), node.getBeginLine());
+      executableLines.put(filename, node.getBeginLine());
       return AstUtil.createCoverageTrackerCall("markExecuted",
-          new StringLiteralExpr(currentClass.toString()),
+          new StringLiteralExpr(filename),
           new IntegerLiteralExpr(String.valueOf(node.getBeginLine())));
     }
     
-    private NameExpr currentPackage;
-    private NameExpr currentClass;
-    
-    @Override public void visit(PackageDeclaration node, Object arg) {
-      currentPackage = node.getName();
-      super.visit(node, arg);
-    }
-    
-    @Override public void visit(ClassOrInterfaceDeclaration node, Object arg) {
-      currentClass = new NameExpr(node.getName());
-      if (currentPackage != null) {
-        currentClass = new QualifiedNameExpr(currentPackage, currentClass.getName());
-      }
-      super.visit(node, arg);
+    @Override public void visit(CompilationUnit unit, Object arg) {
+      filename = ((File) unit.getData()).getAbsolutePath();
+      super.visit(unit, arg);
     }
     
     private Stack<List<Statement>> blocks = new Stack<List<Statement>>();

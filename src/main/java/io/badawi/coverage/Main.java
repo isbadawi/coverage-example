@@ -46,7 +46,9 @@ public class Main {
         "usage: CoverageInstrumenter -d output-dir <java files>");
     File outputDir = getOrCreateDirectory(arguments.get(directoryFlag + 1));
     for (String filename : files) {
-      CompilationUnit unit = JavaParser.parse(new File(filename));
+      File sourceFile = new File(filename);
+      CompilationUnit unit = JavaParser.parse(sourceFile);
+      unit.setData(sourceFile);
       CoverageInstrumenter.instrument(unit);
       File outputFile = new File(outputDir, filename);
       Files.write(unit.toString(), outputFile, Charsets.UTF_8);

@@ -41,7 +41,7 @@ public class CoverageTracker {
   private static String generateLcov() {
     StringBuilder sb = new StringBuilder();
     for (String className : coverage.rowKeySet()) {
-      sb.append("SF:" + className.replaceAll("\\.", "/") + ".java\n");
+      sb.append("SF:" + className + "\n");
       for (Map.Entry<Integer, Boolean> line : coverage.row(className).entrySet()) {
         sb.append(String.format("DA:%d,%d\n", line.getKey(), line.getValue() ? 1 : 0));
       }
