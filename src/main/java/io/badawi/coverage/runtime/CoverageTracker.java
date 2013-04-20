@@ -34,8 +34,9 @@ public class CoverageTracker {
     coverage.put(className, line, false);
   }
   
-  public static void markExecuted(String className, int line) {
+  public static <T> T markExecuted(String className, int line, T expression) {
     coverage.put(className, line, true);
+    return expression;
   }
   
   private static String generateLcov() {

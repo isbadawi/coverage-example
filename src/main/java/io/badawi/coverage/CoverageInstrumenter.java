@@ -5,6 +5,7 @@ import japa.parser.ast.body.MethodDeclaration;
 import japa.parser.ast.body.ModifierSet;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
+import japa.parser.ast.stmt.ExpressionStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.type.ClassOrInterfaceType;
 import japa.parser.ast.type.ReferenceType;
@@ -50,8 +51,8 @@ public class CoverageInstrumenter {
     List<Statement> body = mainMethod.getBody().getStmts();
     for (String className : executableLines.keySet()) {
       for (Integer line : executableLines.get(className)) {
-        body.add(0, AstUtil.createCoverageTrackerCall("markExecutable",
-            new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line))));
+        body.add(0, new ExpressionStmt(AstUtil.createCoverageTrackerCall("markExecutable",
+            new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line)))));
       }
     }
   }
