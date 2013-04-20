@@ -5,7 +5,9 @@ import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 
+import java.io.File;
 import java.io.StringReader;
+import java.util.Arrays;
 
 public class HelloJavaparser {
   public static void main(String[] args) throws ParseException {
@@ -16,8 +18,8 @@ public class HelloJavaparser {
       .append("    System.out.println(\"hello, world\");\n")
       .append("  }\n")
       .append("}\n").toString()));
-    
-    CoverageInstrumenter.instrument(unit);
+    unit.setData(new File("io/badawi/hello/Hello.java"));
+    CoverageInstrumenter.instrument(Arrays.asList(unit), "io.badawi.hello.Hello");
     System.out.println(unit.toString());
   }
 }

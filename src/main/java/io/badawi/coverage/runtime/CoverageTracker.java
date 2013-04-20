@@ -34,8 +34,47 @@ public class CoverageTracker {
     coverage.put(className, line, false);
   }
   
-  public static <T> T markExecuted(String className, int line, T expression) {
+  public static void markExecuted(String className, int line) {
     coverage.put(className, line, true);
+  }
+  
+  public static byte markExecuted(String className, int line, byte expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static char markExecuted(String className, int line, char expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static int markExecuted(String className, int line, int expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static long markExecuted(String className, int line, long expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static boolean markExecuted(String className, int line, boolean expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static float markExecuted(String className, int line, float expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static double markExecuted(String className, int line, double expression) {
+    markExecuted(className, line);
+    return expression;
+  }
+  
+  public static <T> T markExecuted(String className, int line, T expression) {
+    markExecuted(className, line);
     return expression;
   }
   

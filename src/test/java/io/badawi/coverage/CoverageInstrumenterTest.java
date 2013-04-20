@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
 
 import java.io.StringReader;
@@ -18,7 +19,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.primitives.Ints;
 
 public class CoverageInstrumenterTest {
-  private CompilationUnit helloClassfile;
+  private ClassOrInterfaceDeclaration helloClass;
   private Iterable<MethodDeclaration> nonMainMethods;
   private MethodDeclaration mainMethod;
   
@@ -43,7 +44,7 @@ public class CoverageInstrumenterTest {
 
   @Before
   public void initializeHelloClass() throws ParseException {
-    helloClassfile = JavaParser.parse(new StringReader(new StringBuilder()
+    CompilationUnit helloClassfile = JavaParser.parse(new StringReader(new StringBuilder()
         .append("package io.badawi.hello;\n\n")
         .append("public class Hello {\n")
         .append(method("public static void notMain(String[] args)"))
@@ -54,6 +55,7 @@ public class CoverageInstrumenterTest {
         .append(method("public void main(String[] args)"))
         .append(method("public static void main()"))
         .append("}\n").toString()));
+    helloClass = (ClassOrInterfaceDeclaration) helloClassfile.getTypes().get(0);
     nonMainMethods = getMethods(helloClassfile, 0, 2, 3, 4, 5, 6);
     mainMethod = getMethod(helloClassfile, 1);
   }
@@ -68,7 +70,7 @@ public class CoverageInstrumenterTest {
   
   @Test
   public void testCanFindMainMethod() {
-    assertSame(mainMethod, CoverageInstrumenter.findMainMethod(helloClassfile));
+    assertSame(mainMethod, CoverageInstrumenter.findMainMethod(helloClass));
   }
 
 }

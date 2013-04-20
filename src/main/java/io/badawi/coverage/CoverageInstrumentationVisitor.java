@@ -58,10 +58,13 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
 
   private Expression makeCoverageTrackingCall(Expression node, boolean passInNode) {
     executableLines.put(filename, node.getBeginLine());
-    return AstUtil.createCoverageTrackerCall("markExecuted",
+    MethodCallExpr call = AstUtil.createCoverageTrackerCall("markExecuted",
         new StringLiteralExpr(filename),
-        new IntegerLiteralExpr(String.valueOf(node.getBeginLine())),
-        passInNode ? node : new NullLiteralExpr());
+        new IntegerLiteralExpr(String.valueOf(node.getBeginLine())));
+    if (passInNode) {
+      ASTHelper.addArgument(call, node);
+    }
+    return call;
   }
 
   @Override public Node visit(CompilationUnit unit, Object arg) {

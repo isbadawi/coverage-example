@@ -10,8 +10,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
+import com.google.common.base.Throwables;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 public class Main {
@@ -35,22 +38,44 @@ public class Main {
   
   public static void main(String[] args) throws IOException, ParseException {
     List<String> arguments = Arrays.asList(args);
-    Iterable<String> files = Iterables.filter(arguments, new Predicate<String>() {
-      public boolean apply(String s) {
-        return s.endsWith(".java");
-      }
-    });
+    List<String> files = FluentIterable.from(arguments)
+        .filter(new Predicate<String>() {
+          public boolean apply(String s) {
+            return s.endsWith(".java");
+          }
+        })
+        .toList();
 
     int directoryFlag = arguments.indexOf("-d");
     abortIf(directoryFlag == -1 || arguments.size() <= directoryFlag + 1,
-        "usage: CoverageInstrumenter -d output-dir <java files>");
+        "usage: CoverageInstrumenter -d output-dir -e entry-point-class <java files>");
+    
+    int entryPointFlag = arguments.indexOf("-e");
+    abortIf(entryPointFlag == -1 || arguments.size() <= entryPointFlag + 1,
+        "usage: CoverageInstrumenter -d output-dir -e entry-point-class <java files>");
+
     File outputDir = getOrCreateDirectory(arguments.get(directoryFlag + 1));
-    for (String filename : files) {
-      File sourceFile = new File(filename);
-      CompilationUnit unit = JavaParser.parse(sourceFile);
-      unit.setData(sourceFile);
-      CoverageInstrumenter.instrument(unit);
-      File outputFile = new File(outputDir, filename);
+    String entryPointClass = arguments.get(entryPointFlag + 1);
+
+    List<CompilationUnit> units = FluentIterable.from(files)
+        .transform(new Function<String, CompilationUnit>() {
+          public CompilationUnit apply(String filename) {
+            File sourceFile = new File(filename);
+            try {
+              CompilationUnit unit = JavaParser.parse(sourceFile);
+              unit.setData(sourceFile);
+              return unit;
+            } catch (Exception e) {
+              throw Throwables.propagate(e);
+            }
+          }
+        })
+        .toList();
+    CoverageInstrumenter.instrument(units, entryPointClass);
+    
+    for (CompilationUnit unit : units) {
+      File outputFile = new File(outputDir, ((File) unit.getData()).getPath());
+      Files.createParentDirs(outputFile);
       Files.write(unit.toString(), outputFile, Charsets.UTF_8);
     }
   }
