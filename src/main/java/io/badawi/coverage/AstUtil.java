@@ -4,8 +4,6 @@ import japa.parser.ASTHelper;
 import japa.parser.ast.expr.Expression;
 import japa.parser.ast.expr.MethodCallExpr;
 import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.stmt.ExpressionStmt;
-import japa.parser.ast.stmt.Statement;
 
 public class AstUtil {
   public static MethodCallExpr createMethodCall(String qualifiedName, Expression... arguments) {
@@ -17,7 +15,7 @@ public class AstUtil {
     }
     return call;
   }
-  
+
   public static MethodCallExpr createCoverageTrackerCall(String method, Expression... arguments) {
     return createMethodCall("io.badawi.coverage.runtime.CoverageTracker." + method, arguments);
   }

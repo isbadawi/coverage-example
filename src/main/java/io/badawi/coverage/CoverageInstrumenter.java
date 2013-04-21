@@ -26,17 +26,17 @@ public class CoverageInstrumenter {
   @VisibleForTesting
   static boolean isMainMethod(MethodDeclaration method) {
     return ModifierSet.isPublic(method.getModifiers())
-        && ModifierSet.isStatic(method.getModifiers())
-        && method.getType() instanceof VoidType
-        && method.getName().equals("main")
-        && method.getParameters() != null
-        && method.getParameters().size() == 1
-        && method.getParameters().get(0).getType().equals(
-            new ReferenceType(new ClassOrInterfaceType("String"), 1));
+            && ModifierSet.isStatic(method.getModifiers())
+            && method.getType() instanceof VoidType
+            && method.getName().equals("main")
+            && method.getParameters() != null
+            && method.getParameters().size() == 1
+            && method.getParameters().get(0).getType().equals(
+                    new ReferenceType(new ClassOrInterfaceType("String"), 1));
   }
-  
+
   static ClassOrInterfaceDeclaration findClassByName(Iterable<CompilationUnit> units,
-      final String clazz) {
+          final String clazz) {
     final ClassOrInterfaceDeclaration[] decl = new ClassOrInterfaceDeclaration[1];
     for (CompilationUnit unit : units) {
       unit.accept(new VoidVisitorAdapter<Object>() {
@@ -45,7 +45,7 @@ public class CoverageInstrumenter {
           packageName = node.getName();
           super.visit(node, arg);
         }
-        
+
         @Override public void visit(ClassOrInterfaceDeclaration node, Object arg) {
           String qualifiedName = node.getName();
           if (packageName != null) {
@@ -75,22 +75,22 @@ public class CoverageInstrumenter {
     }, null);
     return method[0];
   }
-  
+
   public static void instrument(Iterable<CompilationUnit> units, String entryPointClass) {
     Multimap<String, Integer> executableLines = HashMultimap.create();
-    System.out.println(units.getClass());
     for (CompilationUnit unit : units) {
       CoverageInstrumentationVisitor visitor = new CoverageInstrumentationVisitor();
       unit.accept(visitor, null);
       executableLines.putAll(visitor.getExecutableLines());
     }
-    
+
+
     MethodDeclaration mainMethod = findMainMethod(findClassByName(units, entryPointClass));
     List<Statement> body = mainMethod.getBody().getStmts();
     for (String className : executableLines.keySet()) {
       for (Integer line : executableLines.get(className)) {
         body.add(0, new ExpressionStmt(AstUtil.createCoverageTrackerCall("markExecutable",
-            new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line)))));
+                new StringLiteralExpr(className), new IntegerLiteralExpr(String.valueOf(line)))));
       }
     }
   }

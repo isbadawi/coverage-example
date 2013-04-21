@@ -12,7 +12,7 @@ import com.google.common.io.Files;
 
 public class CoverageTracker {
   private static Table<String, Integer, Boolean> coverage = HashBasedTable.create();
-  
+
   static {
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override public void run() {
@@ -20,7 +20,7 @@ public class CoverageTracker {
       }
     });
   }
-  
+
   private static void writeCoverageToFile() {
     String lcovCoverage = generateLcov();
     try {
@@ -33,51 +33,51 @@ public class CoverageTracker {
   public static void markExecutable(String className, int line) {
     coverage.put(className, line, false);
   }
-  
+
   public static void markExecuted(String className, int line) {
     coverage.put(className, line, true);
   }
-  
+
   public static byte markExecuted(String className, int line, byte expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static char markExecuted(String className, int line, char expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static int markExecuted(String className, int line, int expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static long markExecuted(String className, int line, long expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static boolean markExecuted(String className, int line, boolean expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static float markExecuted(String className, int line, float expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static double markExecuted(String className, int line, double expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   public static <T> T markExecuted(String className, int line, T expression) {
     markExecuted(className, line);
     return expression;
   }
-  
+
   private static String generateLcov() {
     StringBuilder sb = new StringBuilder();
     for (String className : coverage.rowKeySet()) {

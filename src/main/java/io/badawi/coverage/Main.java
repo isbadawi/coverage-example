@@ -14,18 +14,17 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 public class Main {
-  
+
   private static void abortIf(boolean condition, String message, Object... args) {
     if (condition) {
       System.err.printf(message + "\n", args);
       System.exit(1);
     }
   }
-  
+
   private static File getOrCreateDirectory(String filename) {
     File outputDir = new File(filename);
     abortIf(outputDir.exists() && !outputDir.isDirectory(),
@@ -35,7 +34,7 @@ public class Main {
     }
     return outputDir;
   }
-  
+
   public static void main(String[] args) throws IOException, ParseException {
     List<String> arguments = Arrays.asList(args);
     List<String> files = FluentIterable.from(arguments)
@@ -49,7 +48,7 @@ public class Main {
     int directoryFlag = arguments.indexOf("-d");
     abortIf(directoryFlag == -1 || arguments.size() <= directoryFlag + 1,
         "usage: CoverageInstrumenter -d output-dir -e entry-point-class <java files>");
-    
+
     int entryPointFlag = arguments.indexOf("-e");
     abortIf(entryPointFlag == -1 || arguments.size() <= entryPointFlag + 1,
         "usage: CoverageInstrumenter -d output-dir -e entry-point-class <java files>");
@@ -72,7 +71,7 @@ public class Main {
         })
         .toList();
     CoverageInstrumenter.instrument(units, entryPointClass);
-    
+
     for (CompilationUnit unit : units) {
       File outputFile = new File(outputDir, ((File) unit.getData()).getPath());
       Files.createParentDirs(outputFile);

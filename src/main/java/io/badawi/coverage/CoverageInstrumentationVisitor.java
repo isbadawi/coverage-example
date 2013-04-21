@@ -51,7 +51,7 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
   }
 
   private String filename;
-  
+
   private Expression makeCoverageTrackingCall(Expression node) {
     return makeCoverageTrackingCall(node, true);
   }
@@ -71,7 +71,7 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
     filename = ((File) unit.getData()).getAbsolutePath();
     return super.visit(unit, arg);
   }
-  
+
   @Override
   public Node visit(ExpressionStmt n, Object arg) {
     if (!(n.getExpression() instanceof MethodCallExpr)) {
@@ -82,7 +82,7 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
     ASTHelper.addStmt(block, n);
     return block;
   }
-  
+
   @Override
   public Node visit(ForStmt n, Object arg) {
     List<Expression> newInit = Lists.newArrayList(n.getInit());
@@ -105,7 +105,7 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
     n.setUpdate(newUpdate);
     return n;
   }
-  
+
   // I don't like what's below this line either, but I'm not sure what to do about it.
   // There doesn't seem to be mechanism for having one visit method apply to all expressions.
 
@@ -198,7 +198,7 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
   public Node visit(MethodCallExpr n, Object arg) {
     return makeCoverageTrackingCall(n);
   }
-  
+
   private boolean insideStatement(Node n) {
     while (n != null && !(n instanceof Statement)) {
       n = n.getParentNode();
