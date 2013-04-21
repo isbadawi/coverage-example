@@ -82,26 +82,23 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
     return block;
   }
 
+  private List<Expression> instrument(List<Expression> exprs) {
+    List<Expression> newExprs = Lists.newArrayList(exprs);
+    for (int i = 0, j = 0; i < exprs.size(); i++, j++) {
+      Expression expr = exprs.get(i);
+      if (expr instanceof MethodCallExpr) {
+        newExprs.add(j++, makeCoverageTrackingCall(expr, false));
+      }
+    }
+    return newExprs;
+  }
+
   @Override
   public Node visit(ForStmt n, Object arg) {
-    List<Expression> newInit = Lists.newArrayList(n.getInit());
-    for (int i = 0, j = 0; i < n.getInit().size(); i++, j++) {
-      Expression expr = n.getInit().get(i);
-      if (expr instanceof MethodCallExpr) {
-        newInit.add(j++, makeCoverageTrackingCall(expr, false));
-      }
-    }
-    n.setInit(newInit);
+    n.setInit(instrument(n.getInit()));
     n.setCompare((Expression) n.getCompare().accept(this, arg));
     n.setBody((Statement) n.getBody().accept(this, arg));
-    List<Expression> newUpdate = Lists.newArrayList(n.getUpdate());
-    for (int i = 0, j = 0; i < n.getUpdate().size(); i++, j++) {
-      Expression expr = n.getUpdate().get(i);
-      if (expr instanceof MethodCallExpr) {
-        newUpdate.add(j++, makeCoverageTrackingCall(expr, false));
-      }
-    }
-    n.setUpdate(newUpdate);
+    n.setUpdate(instrument(n.getUpdate()));
     return n;
   }
 
