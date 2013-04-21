@@ -204,6 +204,8 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
 
   @Override
   public Node visit(NameExpr n, Object arg) {
+    // Names in e.g. package declarations or class declarations are also considered
+    // expressions, so walk up the AST and make sure we're inside a statement
     if (insideStatement(n)) {
       return makeCoverageTrackingCall(n);
     }
