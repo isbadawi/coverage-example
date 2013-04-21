@@ -43,7 +43,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Object> {
-
   private Multimap<String, Integer> executableLines = HashMultimap.create();
 
   public Multimap<String, Integer> getExecutableLines() {
