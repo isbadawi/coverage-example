@@ -35,6 +35,18 @@ public class Main {
     return outputDir;
   }
 
+  private static CompilationUnit parse(String filename) {
+    File sourceFile = new File(filename);
+    CompilationUnit unit;
+    try {
+      unit = JavaParser.parse(sourceFile);
+    } catch (Exception e) {
+      throw Throwables.propagate(e);
+    }
+    unit.setData(sourceFile);
+    return unit;
+  }
+
   public static void main(String[] args) throws IOException, ParseException {
     List<String> arguments = Arrays.asList(args);
     List<String> files = FluentIterable.from(arguments)
@@ -42,8 +54,7 @@ public class Main {
           public boolean apply(String s) {
             return s.endsWith(".java");
           }
-        })
-        .toList();
+        }).toList();
 
     int directoryFlag = arguments.indexOf("-d");
     abortIf(directoryFlag == -1 || arguments.size() <= directoryFlag + 1,
@@ -59,17 +70,9 @@ public class Main {
     List<CompilationUnit> units = FluentIterable.from(files)
         .transform(new Function<String, CompilationUnit>() {
           public CompilationUnit apply(String filename) {
-            File sourceFile = new File(filename);
-            try {
-              CompilationUnit unit = JavaParser.parse(sourceFile);
-              unit.setData(sourceFile);
-              return unit;
-            } catch (Exception e) {
-              throw Throwables.propagate(e);
-            }
+            return parse(filename);
           }
-        })
-        .toList();
+        }).toList();
     CoverageInstrumenter.instrument(units, entryPointClass);
 
     for (CompilationUnit unit : units) {
