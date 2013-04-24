@@ -30,6 +30,18 @@ public class CoverageTracker {
     }
   }
 
+  private static String generateLcov() {
+    StringBuilder sb = new StringBuilder();
+    for (String className : coverage.rowKeySet()) {
+      sb.append("SF:" + className + "\n");
+      for (Map.Entry<Integer, Boolean> line : coverage.row(className).entrySet()) {
+        sb.append(String.format("DA:%d,%d\n", line.getKey(), line.getValue() ? 1 : 0));
+      }
+      sb.append("end_of_record\n");
+    }
+    return sb.toString();
+  }
+
   public static void markExecutable(String className, int line) {
     coverage.put(className, line, false);
   }
@@ -76,17 +88,5 @@ public class CoverageTracker {
   public static <T> T markExecuted(String className, int line, T expression) {
     markExecuted(className, line);
     return expression;
-  }
-
-  private static String generateLcov() {
-    StringBuilder sb = new StringBuilder();
-    for (String className : coverage.rowKeySet()) {
-      sb.append("SF:" + className + "\n");
-      for (Map.Entry<Integer, Boolean> line : coverage.row(className).entrySet()) {
-        sb.append(String.format("DA:%d,%d\n", line.getKey(), line.getValue() ? 1 : 0));
-      }
-      sb.append("end_of_record\n");
-    }
-    return sb.toString();
   }
 }
