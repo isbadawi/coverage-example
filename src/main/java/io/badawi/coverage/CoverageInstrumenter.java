@@ -37,7 +37,7 @@ public class CoverageInstrumenter {
       final String clazz) {
     final ClassOrInterfaceDeclaration[] decl = new ClassOrInterfaceDeclaration[1];
     for (CompilationUnit unit : units) {
-      final NameExpr packageName = unit.getPackage().getName();
+      final NameExpr packageName = unit.getPackage() == null ? null : unit.getPackage().getName();
       unit.accept(new VoidVisitorAdapter<Object>() {
         private String qualified(NameExpr scope, String name) {
           if (scope == null) {
