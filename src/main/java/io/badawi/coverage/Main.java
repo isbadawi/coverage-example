@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.FluentIterable;
@@ -62,15 +61,9 @@ public class Main {
 
     File outputDir = getOrCreateDirectory(arguments.get(directoryFlag + 1));
 
-    List<CompilationUnit> units = FluentIterable.from(files)
-        .transform(new Function<String, CompilationUnit>() {
-          public CompilationUnit apply(String filename) {
-            return parse(filename);
-          }
-        }).toList();
-    CoverageInstrumenter.instrument(units);
-
-    for (CompilationUnit unit : units) {
+    for (String file : files) {
+      CompilationUnit unit = parse(file);
+      unit.accept(new CoverageInstrumentationVisitor(), null);
       File outputFile = new File(outputDir, ((File) unit.getData()).getPath());
       Files.createParentDirs(outputFile);
       Files.write(unit.toString(), outputFile, Charsets.UTF_8);
