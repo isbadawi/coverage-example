@@ -1,5 +1,6 @@
 package io.badawi.coverage;
 
+import io.badawi.coverage.runtime.CoverageTracker;
 import japa.parser.ASTHelper;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.Node;
@@ -38,17 +39,9 @@ import japa.parser.ast.visitor.ModifierVisitorAdapter;
 import java.io.File;
 import java.util.List;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 
 public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Object> {
-  private Multimap<String, Integer> executableLines = HashMultimap.create();
-
-  public Multimap<String, Integer> getExecutableLines() {
-    return executableLines;
-  }
-
   private String filename;
 
   private Expression makeCoverageTrackingCall(Expression node) {
@@ -56,7 +49,7 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
   }
 
   private Expression makeCoverageTrackingCall(Expression node, boolean passInNode) {
-    executableLines.put(filename, node.getBeginLine());
+    CoverageTracker.markExecutable(filename, node.getBeginLine());
     NameExpr coverageTracker =
         ASTHelper.createNameExpr("io.badawi.coverage.runtime.CoverageTracker");
     MethodCallExpr call = new MethodCallExpr(coverageTracker, "markExecuted");
