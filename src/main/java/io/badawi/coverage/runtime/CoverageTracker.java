@@ -21,7 +21,8 @@ public class CoverageTracker {
     String lcovCoverage = generateLcov();
     FileWriter writer = null;
     try {
-      writer = new FileWriter("coverage_report.lcov");
+      String coverageReportPath = System.getProperty("coverage.report.path", "coverage_report.lcov");
+      writer = new FileWriter(coverageReportPath);
       writer.write(lcovCoverage);
     } catch (IOException e) {
       throw new RuntimeException(e);
