@@ -58,14 +58,9 @@ public class Main {
 
     int directoryFlag = arguments.indexOf("-d");
     abortIf(directoryFlag == -1 || arguments.size() <= directoryFlag + 1,
-        "usage: CoverageInstrumenter -d output-dir -e entry-point-class <java files>");
-
-    int entryPointFlag = arguments.indexOf("-e");
-    abortIf(entryPointFlag == -1 || arguments.size() <= entryPointFlag + 1,
-        "usage: CoverageInstrumenter -d output-dir -e entry-point-class <java files>");
+        "usage: CoverageInstrumenter -d output-dir <java files>");
 
     File outputDir = getOrCreateDirectory(arguments.get(directoryFlag + 1));
-    String entryPointClass = arguments.get(entryPointFlag + 1);
 
     List<CompilationUnit> units = FluentIterable.from(files)
         .transform(new Function<String, CompilationUnit>() {
@@ -73,7 +68,7 @@ public class Main {
             return parse(filename);
           }
         }).toList();
-    CoverageInstrumenter.instrument(units, entryPointClass);
+    CoverageInstrumenter.instrument(units);
 
     for (CompilationUnit unit : units) {
       File outputFile = new File(outputDir, ((File) unit.getData()).getPath());

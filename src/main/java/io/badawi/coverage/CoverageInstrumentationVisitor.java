@@ -57,9 +57,11 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
 
   private Expression makeCoverageTrackingCall(Expression node, boolean passInNode) {
     executableLines.put(filename, node.getBeginLine());
-    MethodCallExpr call = AstUtil.createCoverageTrackerCall("markExecuted",
-        new StringLiteralExpr(filename),
-        new IntegerLiteralExpr(String.valueOf(node.getBeginLine())));
+    NameExpr coverageTracker =
+        ASTHelper.createNameExpr("io.badawi.coverage.runtime.CoverageTracker");
+    MethodCallExpr call = new MethodCallExpr(coverageTracker, "markExecuted");
+    ASTHelper.addArgument(call, new StringLiteralExpr(filename));
+    ASTHelper.addArgument(call, new IntegerLiteralExpr(String.valueOf(node.getBeginLine())));
     if (passInNode) {
       ASTHelper.addArgument(call, node);
     }
