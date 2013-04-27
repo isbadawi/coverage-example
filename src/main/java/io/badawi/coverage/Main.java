@@ -35,14 +35,12 @@ public class Main {
   }
 
   private static CompilationUnit parse(String filename) {
-    File sourceFile = new File(filename);
     CompilationUnit unit;
     try {
-      unit = JavaParser.parse(sourceFile);
+      unit = JavaParser.parse(new File(filename));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
-    unit.setData(sourceFile);
     return unit;
   }
 
@@ -63,8 +61,8 @@ public class Main {
 
     for (String file : files) {
       CompilationUnit unit = parse(file);
-      unit.accept(new CoverageInstrumentationVisitor(), null);
-      File outputFile = new File(outputDir, ((File) unit.getData()).getPath());
+      unit.accept(new CoverageInstrumentationVisitor(new File(file).getAbsolutePath()), null);
+      File outputFile = new File(outputDir, file);
       Files.createParentDirs(outputFile);
       Files.write(unit.toString(), outputFile, Charsets.UTF_8);
     }

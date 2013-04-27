@@ -2,7 +2,6 @@ package io.badawi.coverage;
 
 import io.badawi.coverage.runtime.CoverageTracker;
 import japa.parser.ASTHelper;
-import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.Node;
 import japa.parser.ast.expr.ArrayAccessExpr;
 import japa.parser.ast.expr.ArrayCreationExpr;
@@ -36,13 +35,16 @@ import japa.parser.ast.stmt.ForStmt;
 import japa.parser.ast.stmt.Statement;
 import japa.parser.ast.visitor.ModifierVisitorAdapter;
 
-import java.io.File;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 
 public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Object> {
   private String filename;
+
+  public CoverageInstrumentationVisitor(String filename) {
+    this.filename = filename;
+  }
 
   private Expression makeCoverageTrackingCall(Expression node) {
     return makeCoverageTrackingCall(node, true);
@@ -59,11 +61,6 @@ public class CoverageInstrumentationVisitor extends ModifierVisitorAdapter<Objec
       ASTHelper.addArgument(call, node);
     }
     return call;
-  }
-
-  @Override public Node visit(CompilationUnit unit, Object arg) {
-    filename = ((File) unit.getData()).getAbsolutePath();
-    return super.visit(unit, arg);
   }
 
   @Override
