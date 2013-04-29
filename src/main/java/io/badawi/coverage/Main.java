@@ -10,56 +10,37 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
-import com.google.common.collect.FluentIterable;
 import com.google.common.io.Files;
 
 public class Main {
-
-  private static void abortIf(boolean condition, String message, Object... args) {
-    if (condition) {
-      System.err.printf(message + "\n", args);
-      System.exit(1);
-    }
-  }
-
-  private static File getOrCreateDirectory(String filename) {
-    File outputDir = new File(filename);
-    abortIf(outputDir.exists() && !outputDir.isDirectory(),
-        "%s is not a directory", outputDir.getAbsolutePath());
-    if (!outputDir.exists()) {
-      outputDir.mkdirs();
-    }
-    return outputDir;
-  }
-
   private static CompilationUnit parse(String filename) {
-    CompilationUnit unit;
     try {
-      unit = JavaParser.parse(new File(filename));
+      return JavaParser.parse(new File(filename));
     } catch (Exception e) {
       throw Throwables.propagate(e);
     }
-    return unit;
   }
 
   public static void main(String[] args) throws IOException, ParseException {
     List<String> arguments = Arrays.asList(args);
-    List<String> files = FluentIterable.from(arguments)
-        .filter(new Predicate<String>() {
-          public boolean apply(String s) {
-            return s.endsWith(".java");
-          }
-        }).toList();
 
     int directoryFlag = arguments.indexOf("-d");
-    abortIf(directoryFlag == -1 || arguments.size() <= directoryFlag + 1,
-        "usage: CoverageInstrumenter -d output-dir <java files>");
+    if (directoryFlag == -1 || arguments.size() <= directoryFlag + 1) {
+      System.err.println("usage: java io.badawi.coverage.Main -d output-dir <java files>\n");
+      return;
+    }
 
-    File outputDir = getOrCreateDirectory(arguments.get(directoryFlag + 1));
+    File outputDir = new File(arguments.get(directoryFlag + 1));
+    if (outputDir.exists() && !outputDir.isDirectory()) {
+      System.err.printf("%s exists and is not a directory\n", outputDir.getAbsolutePath());
+      return;
+    }
 
-    for (String file : files) {
+    for (String file : arguments) {
+      if (!file.endsWith(".java")) {
+        continue;
+      }
       CompilationUnit unit = parse(file);
       unit.accept(new CoverageInstrumentationVisitor(new File(file).getAbsolutePath()), null);
       File outputFile = new File(outputDir, file);
